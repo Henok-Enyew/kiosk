@@ -1,0 +1,11 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      Dev flavor only: allow http:// in every build type (the React Native plugin
+      turns it off for release), so a standalone dev APK can still reach a dev
+      server on the LAN or through `adb reverse`. Prod release stays https-only.
+    -->
+    <application
+        android:usesCleartextTraffic="true"
+        tools:replace="android:usesCleartextTraffic" />
+</manifest>

@@ -1,0 +1,17 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!--
+      Production terminals: the kiosk is the device's home screen, so it comes back
+      after reboots and the Home button. Not in the dev flavor, so a personal phone
+      keeps its normal launcher.
+    -->
+    <application>
+      <activity android:name=".MainActivity" tools:node="merge">
+        <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.HOME" />
+            <category android:name="android.intent.category.DEFAULT" />
+        </intent-filter>
+      </activity>
+    </application>
+</manifest>

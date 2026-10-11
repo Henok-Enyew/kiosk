@@ -22,6 +22,7 @@ react {
     //   skip the bundling of the JS bundle and the assets. Default is "debug", "debugOptimized".
     //   If you add flavors like lite, prod, etc. you'll have to list your debuggableVariants.
     // debuggableVariants = ["liteDebug", "liteDebugOptimized", "prodDebug", "prodDebugOptimized"]
+    debuggableVariants = ["devDebug", "devDebugOptimized", "prodDebug", "prodDebugOptimized"]
 
     /* Bundling */
     //   A list containing the node command and its flags. Default is just 'node'.
@@ -85,6 +86,23 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    buildFeatures {
+        buildConfig true
+    }
+
+    // dev:  simulated biometric hardware + developer panel (runs on any Android phone)
+    // prod: ZKTeco terminals (real SDK engines, app is the HOME screen)
+    flavorDimensions "target"
+    productFlavors {
+        dev {
+            dimension "target"
+            versionNameSuffix "-dev"
+        }
+        prod {
+            dimension "target"
+        }
+    }
+
     signingConfigs {
         debug {
             storeFile file('debug.keystore')
@@ -92,15 +110,24 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        // Set these in ~/.gradle/gradle.properties (never commit the keystore or passwords).
+        if (project.hasProperty('RONA_KIOSK_STORE_FILE')) {
+            release {
+                storeFile file(RONA_KIOSK_STORE_FILE)
+                storePassword RONA_KIOSK_STORE_PASSWORD
+                keyAlias RONA_KIOSK_KEY_ALIAS
+                keyPassword RONA_KIOSK_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            // Falls back to the debug key so local release builds work; terminals must get
+            // an APK signed with the real release key (the device-owner app is bound to it).
+            signingConfig signingConfigs.findByName('release') ?: signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
         }
